@@ -22,6 +22,6 @@ express()
 
 function lineBot(req, res) {
   res.status(200).end()
-  res.json({ message: "hook" })
+  //res.json({ message: "hook" })
   console.log("pass")
 }
