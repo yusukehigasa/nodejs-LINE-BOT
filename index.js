@@ -10,6 +10,8 @@ const config = {
 }
 
 express()
+  //NOTE: bodyパーサーをlineミドルウェアより前に使うとうまく動作しない
+  //      https://line.github.io/line-bot-sdk-nodejs/guide/webhook.html#build-a-webhook-server-with-express
   //.use(express.urlencoded({ extended: true }))
   //.use(express.json())
   .use(express.static(path.join(__dirname, "public")))
@@ -19,6 +21,7 @@ express()
   .listen(port, () => console.log(`Listening on ${ port }`))
 
 function lineBot(req, res) {
+  res.status(200).end()
   res.json({ message: "hook" })
   console.log("pass")
 }
