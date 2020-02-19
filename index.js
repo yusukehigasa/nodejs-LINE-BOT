@@ -8,6 +8,7 @@ const config = {
   channelAccessToken: process.env.LINE_ACCESS_TOKEN,
   channelSecret: process.env.LINE_SECRET_KEY
 }
+const client = new line.Client(config)
 
 express()
   //NOTE: bodyパーサーをlineミドルウェアより前に使うとうまく動作しない
@@ -22,6 +23,26 @@ express()
 
 function lineBot(req, res) {
   res.status(200).end()
+
+  let events = req.body.events
+  let promises = []
+
+  events.map((val) => {
+    promises.push(echoMan(val))
+  })
+
+  Promise
+    .all(promises)
+    .then(console.log("pass"))
+
   //res.json({ message: "hook" })
-  console.log("pass")
+}
+
+async function echoMan(val) {
+  let pro = await client.getProfile(val.source.userId)
+
+  return client.replyMessage(val.replyToken, {
+    type: "text",
+    text: `${pro.displayName}さん、今「${val.message.text}」って言いました？`
+  })
 }
