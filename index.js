@@ -9,13 +9,15 @@ const config = {
   channelSecret: process.env.LINE_SECRET_KEY
 }
 
+let middleware = line.middleware(config)
+
 express()
   .use(express.urlencoded({ extended: true }))
   .use(express.json())
   .use(express.static(path.join(__dirname, "public")))
   .set("views", path.join(__dirname, "views"))
   .get("/g/", (req, res) => res.json({ message: `Welcome to ${process.env.SERVICE_NAME}` }))
-  .post("/hook/", line.middleware(config), (req, res) => lineBot(req, res))
+  .post("/hook/", middleware, (req, res) => lineBot(req, res))
   .listen(port, () => console.log(`Listening on ${ port }`))
 
 function lineBot(req, res) {
