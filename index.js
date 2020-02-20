@@ -25,24 +25,21 @@ function lineBot(req, res) {
   res.status(200).end()
 
   let events = req.body.events
-  let promises = []
-
-  events.map((val) => {
-    promises.push(echoMan(val))
-  })
 
   Promise
-    .all(promises)
-    .then(console.log("pass"))
+    .all(events.map(handleEvent))
+    .then((result) => res.json(result))
+    .catch((result) => console.log("error!!"))
 
   //res.json({ message: "hook" })
 }
 
-async function echoMan(val) {
-  let pro = await client.getProfile(val.source.userId)
+//非同期関数として定義
+async function handleEvent(event) {
+  let pro = await client.getProfile(event.source.userId) //awaitで Promiseが返ってくるかで処理を待機させる施策
 
-  return client.replyMessage(val.replyToken, {
+  return client.replyMessage(event.replyToken, {
     type: "text",
-    text: `${pro.displayName}さん、今「${val.message.text}」って言いました？`
+    text: `${pro.displayName}さん、今「${event.message.text}」って言いました？`
   })
 }
