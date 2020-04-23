@@ -28,7 +28,7 @@ function lineBot(req, res) {
 
   let signature = crypto
         .createHmac("SHA256", process.env.LINE_SECRET_KEY)
-        .update(req.body).digest("base64")
+        .update(Buffer.from(JSON.stringify(req.body))).digest("base64")
 
   if (signature === req.headers["X-Line-Signature"]) {
     let events = req.body.events
