@@ -26,9 +26,14 @@ express()
 function lineBot(req, res) {
   res.status(200).end()
 
+  console.log("Logs ready...")
+  console.log(req.body)
+  console.log(req.headers)
+  console.log("Logs end...")
+
   let signature = crypto
         .createHmac("SHA256", process.env.LINE_SECRET_KEY)
-        .update(Buffer.from(JSON.stringify(req.body))).digest("base64")
+        .update(req.body).digest("base64")
 
   if (signature === req.headers["X-Line-Signature"]) {
     let events = req.body.events
