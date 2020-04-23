@@ -4,6 +4,8 @@ const express = require("express")
 const path = require("path")
 const port = process.env.PORT || 5000
 const line = require("@line/bot-sdk")
+const crypto = require("crypto")
+
 const config = {
   channelAccessToken: process.env.LINE_ACCESS_TOKEN,
   channelSecret: process.env.LINE_SECRET_KEY
@@ -24,12 +26,20 @@ express()
 function lineBot(req, res) {
   res.status(200).end()
 
-  let events = req.body.events
+  let signature = crypto
+        .createHmac("SHA256", process.env.LINE_SECRET_KEY)
+        .update(req.body).digest("base64")
 
-  Promise
-    .all(events.map(handleEvent))
-    .then((result) => res.json(result))
-    .catch((result) => console.log("error!!"))
+  if (signature === req.headers["X-Line-Signature"]) {
+    let events = req.body.events
+
+    Promise
+      .all(events.map(handleEvent))
+      .then((result) => res.json(result))
+      .catch((result) => console.log("error!!"))
+  } else {
+    console.log("Signature Failed!!");
+  }
 
   //res.json({ message: "hook" })
 }
