@@ -36,7 +36,7 @@ function lineBot(req, res) {
     Promise
       .all(events.map(handleEvent))
       .then((result) => {
-        return res.json(result)
+        return res.send(result)
       })
       .catch((result) => {
         return console.log("error: " + result)
