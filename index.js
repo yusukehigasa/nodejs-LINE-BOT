@@ -30,6 +30,17 @@ function lineBot(req, res, next) {
   console.log(next)
   console.log("Log end.")
 
+  Promise
+    .all(events.map(handleEvent))
+    .then((result) => {
+      res.send(result)
+      return next()
+    })
+    .catch((result) => {
+      return console.log("error: " + result)
+    })
+
+  /*
   let signature = crypto
         .createHmac("SHA256", process.env.LINE_SECRET_KEY)
         .update(JSON.stringify(req.body)).digest("base64")
@@ -49,6 +60,7 @@ function lineBot(req, res, next) {
   } else {
     console.log("Signature Failed!!");
   }
+  */
 
   //res.json({ message: "hook" })
 }
