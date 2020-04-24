@@ -35,10 +35,7 @@ function lineBot(req, res) {
 
     Promise
       .all(events.map(handleEvent))
-      .then((result) => {
-        //console.log("Success: " + result)
-        //res.json(result)
-      })
+      .then((result) => console.log("Success!!"))
       .catch((result) => console.log("Error: " + result))
   } else {
     console.log("Signature Failed!!");
