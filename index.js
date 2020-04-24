@@ -26,23 +26,6 @@ express()
 function lineBot(req, res, next) {
   res.status(200).end()
 
-  console.log("Log ready...")
-  console.log(next)
-  console.log("Log end.")
-
-  let events = req.body.events
-
-  Promise
-    .all(events.map(handleEvent))
-    .then((result) => {
-      res.send(result)
-      return next()
-    })
-    .catch((result) => {
-      return console.log("error: " + result)
-    })
-
-  /*
   let signature = crypto
         .createHmac("SHA256", process.env.LINE_SECRET_KEY)
         .update(JSON.stringify(req.body)).digest("base64")
@@ -53,8 +36,9 @@ function lineBot(req, res, next) {
     Promise
       .all(events.map(handleEvent))
       .then((result) => {
-        res.send(result)
-        return next()
+        if (result) {
+          res.send(result)
+        }
       })
       .catch((result) => {
         return console.log("error: " + result)
@@ -62,17 +46,20 @@ function lineBot(req, res, next) {
   } else {
     console.log("Signature Failed!!");
   }
-  */
 
   //res.json({ message: "hook" })
 }
 
 //非同期関数として定義
 async function handleEvent(event) {
-  let pro = await client.getProfile(event.source.userId) //awaitで Promiseが返ってくるかで処理を待機させる施策
+  if (event) {
+    let pro = await client.getProfile(event.source.userId) //awaitで Promiseが返ってくるかで処理を待機させる施策
 
-  return client.replyMessage(event.replyToken, {
-    type: "text",
-    text: `${pro.displayName}さん、今「${event.message.text}」って言いました？`
-  })
+    return client.replyMessage(event.replyToken, {
+      type: "text",
+      text: `${pro.displayName}さん、今「${event.message.text}」って言いました？`
+    })
+  }
+
+  return false
 }
