@@ -36,8 +36,8 @@ function lineBot(req, res) {
     Promise
       .all(events.map(handleEvent))
       .then((result) => {
-        console.log("Result is: " + Object.keys(result).length)
-        res.json(result)
+        console.log("Success: " + result)
+        //res.json(result)
       })
       .catch((result) => console.log("error: " + result))
   } else {
