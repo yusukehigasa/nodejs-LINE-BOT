@@ -36,12 +36,15 @@ function lineBot(req, res, next) {
     Promise
       .all(events.map(handleEvent))
       .then((result) => {
-        if (result) {
-          res.send(result)
-        }
+        console.log("then ready...")
+        console.log("success: " + result)
+        res.send(result)
+        console.log("then end...")
       })
       .catch((result) => {
-        return console.log("error: " + result)
+        console.log("catch ready...")
+        console.log("error: " + result)
+        console.log("catch end...")
       })
   } else {
     console.log("Signature Failed!!");
@@ -52,14 +55,11 @@ function lineBot(req, res, next) {
 
 //非同期関数として定義
 async function handleEvent(event) {
-  if (event) {
-    let pro = await client.getProfile(event.source.userId) //awaitで Promiseが返ってくるかで処理を待機させる施策
+  console.log("handleEvent() Called...")
+  let pro = await client.getProfile(event.source.userId) //awaitで Promiseが返ってくるかで処理を待機させる施策
 
-    return client.replyMessage(event.replyToken, {
-      type: "text",
-      text: `${pro.displayName}さん、今「${event.message.text}」って言いました？`
-    })
-  }
-
-  return false
+  return client.replyMessage(event.replyToken, {
+    type: "text",
+    text: `${pro.displayName}さん、今「${event.message.text}」って言いました？`
+  })
 }
