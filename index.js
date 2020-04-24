@@ -38,7 +38,7 @@ function lineBot(req, res, next) {
       .then((result) => {
         console.log("then ready...")
         console.log("success: " + result)
-        res.send(result)
+        res.json(result)
         console.log("then end...")
       })
       .catch((result) => {
