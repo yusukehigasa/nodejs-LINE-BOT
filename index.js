@@ -20,11 +20,15 @@ express()
   .use(express.static(path.join(__dirname, "public")))
   .set("views", path.join(__dirname, "views"))
   .get("/g/", (req, res) => res.json({ message: `Welcome to ${process.env.SERVICE_NAME}` }))
-  .post("/hook/", line.middleware(config), (req, res) => lineBot(req, res))
+  .post("/hook/", line.middleware(config), (req, res, next) => lineBot(req, res, next))
   .listen(port, () => console.log(`Listening on ${ port }`))
 
-function lineBot(req, res) {
+function lineBot(req, res, next) {
   res.status(200).end()
+
+  console.log("Log ready...")
+  console.log(next)
+  console.log("Log end.")
 
   let signature = crypto
         .createHmac("SHA256", process.env.LINE_SECRET_KEY)
@@ -36,7 +40,8 @@ function lineBot(req, res) {
     Promise
       .all(events.map(handleEvent))
       .then((result) => {
-        return res.send(result)
+        res.send(result)
+        return next()
       })
       .catch((result) => {
         return console.log("error: " + result)
