@@ -30,6 +30,8 @@ function lineBot(req, res, next) {
   console.log(next)
   console.log("Log end.")
 
+  let events = req.body.events
+
   Promise
     .all(events.map(handleEvent))
     .then((result) => {
