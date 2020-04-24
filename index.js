@@ -20,10 +20,10 @@ express()
   .use(express.static(path.join(__dirname, "public")))
   .set("views", path.join(__dirname, "views"))
   .get("/g/", (req, res) => res.json({ message: `Welcome to ${process.env.SERVICE_NAME}` }))
-  .post("/hook/", line.middleware(config), (req, res, next) => lineBot(req, res, next))
+  .post("/hook/", line.middleware(config), (req, res) => lineBot(req, res))
   .listen(port, () => console.log(`Listening on ${ port }`))
 
-function lineBot(req, res, next) {
+function lineBot(req, res) {
   res.status(200).end()
 
   let signature = crypto
@@ -36,16 +36,10 @@ function lineBot(req, res, next) {
     Promise
       .all(events.map(handleEvent))
       .then((result) => {
-        console.log("then ready...")
-        console.log("success: " + result)
+        console.log("Result is: " + Object.keys(result).length())
         res.json(result)
-        console.log("then end...")
       })
-      .catch((result) => {
-        console.log("catch ready...")
-        console.log("error: " + result)
-        console.log("catch end...")
-      })
+      .catch((result) => console.log("error: " + result))
   } else {
     console.log("Signature Failed!!");
   }
@@ -55,7 +49,6 @@ function lineBot(req, res, next) {
 
 //非同期関数として定義
 async function handleEvent(event) {
-  console.log("handleEvent() Called...")
   let pro = await client.getProfile(event.source.userId) //awaitで Promiseが返ってくるかで処理を待機させる施策
 
   return client.replyMessage(event.replyToken, {
