@@ -9,6 +9,9 @@ const port = process.env.PORT || 5000
 const line = require("@line/bot-sdk")
 const crypto = require("crypto")
 
+const axios = require("axios")
+const queryString = require("query-string")
+
 const config = {
   channelAccessToken: process.env.LINE_ACCESS_TOKEN,
   channelSecret: process.env.LINE_SECRET_KEY
@@ -64,7 +67,30 @@ async function handleEvent(event) {
 
     //NOTE: 投稿された文字列で検索をする処理
     if (json.action == "yes") {
-      YouTube.dialogResults(event, client, json.type, json.value)
+      //YouTube.dialogResults(event, client, json.type, json.value)
+      let data = {
+        part: "snippet",
+        q: json.value,
+        type: json.type, //「channel,playlist,video」のどれか
+        key: process.env.YOUTUBE_API_KEY
+      }
+      //GETメソッド向けにパラメータに変換
+      let params = queryString.stringify(data)
+
+      console.log("オブジェクトを変換")
+      console.log(params)
+
+      let url = `https://www.googleapis.com/youtube/v3/search?${params}`
+
+      console.log("URLを生成")
+      console.log(url)
+
+      axios.get(url)
+        .then(function(res) {
+          console.log(res.data.items)
+        })
+        .catch(error => console.log("Error: ", error))
+
     }
 
     //NOTE: 文字列の投稿があったら
